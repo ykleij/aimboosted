@@ -1,5 +1,3 @@
-import './style.css'
-
 class AimTrainer {
   constructor() {
     this.score = 0;
@@ -168,7 +166,7 @@ class AimTrainer {
       setTimeout(spawnTarget, 500);
     }
   }
-  
+
   cleanupTarget(target, growAnim, shrinkAnim) {
     growAnim.cancel();
     shrinkAnim?.cancel();
