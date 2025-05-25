@@ -167,90 +167,67 @@ class AimTrainer {
     }
   }
 
-  cleanupTarget(target, growAnim, shrinkAnim) {
-    growAnim.cancel();
-    shrinkAnim?.cancel();
-  
-    if (target.parentNode) {
-      this.gameArea.removeChild(target);
-    }
-  
-    const index = this.targets.indexOf(target);
-    if (index !== -1) {
-      this.targets.splice(index, 1);
-    }
-  }
-  
-
   createTarget() {
     const target = document.createElement('div');
-    target.classList.add('target', 'active');
-  
-    // Use cached game area dimensions if available
-    const gameRect = this.cachedGameRect || this.gameArea.getBoundingClientRect();
+    target.classList.add('target', 'active')
+
+    // Position target randomly, avoiding edges
+    const gameRect = this.gameArea.getBoundingClientRect();
     const targetSize = 80;
     const margin = targetSize / 2 + 20;
-  
+
     const x = margin + Math.random() * (gameRect.width - margin * 2);
     const y = margin + Math.random() * (gameRect.height - margin * 2);
-  
-    target.style.left = `${x}px`;
-    target.style.top = `${y}px`;
-  
-    // Entry animation
-    const growAnim = target.animate([
+
+    target.style.left = x + 'px';
+    target.style.top = y + 'px';
+
+    const animation = target.animate([
       { transform: 'scale(0)' },
       { transform: 'scale(1)' }
     ], {
       duration: this.fadeSpeed * 1000,
+      // easing: 'ease-out',
       fill: 'forwards'
     });
-  
-    let shrinkAnim = null;
-    let clicked = false;
-  
-    // When entry animation finishes, start shrink animation
-    growAnim.onfinish = () => {
+
+    let shrinkAnim;
+    animation.onfinish = () => {
       shrinkAnim = target.animate([
         { transform: 'scale(1)' },
         { transform: 'scale(0)' }
       ], {
         duration: this.fadeSpeed * 1500,
+        // easing: 'ease-out',
         fill: 'forwards'
       });
-  
-      shrinkAnim.onfinish = () => {
-        if (!clicked && target.parentNode) {
-          this.missTarget(target);
-          this.cleanupTarget(target, growAnim, shrinkAnim);
-        }
-      };
     };
-  
-    // Click handler (left or right)
-    const handleClick = (e) => {
-      if (clicked) return;
-      clicked = true;
-  
-      this.hitTarget(e, target, [growAnim, shrinkAnim]);
-      this.cleanupTarget(target, growAnim, shrinkAnim);
-    };
-  
-    target.addEventListener('click', handleClick);
+
+    animation.pause();
+    animation.currentTime = 0;
+
+    target.addEventListener('click', (e) => this.hitTarget(e, target, [animation, shrinkAnim]));
+
+    // Add right-click support for targets
     target.addEventListener('mousedown', (e) => {
-      if (e.button === 2) {
+      if (e.button === 2) { // Right mouse button
         e.preventDefault();
-        handleClick(e);
+        this.hitTarget(e, target, [animation, shrinkAnim]);
       }
     });
-  
+
     this.gameArea.appendChild(target);
     this.targets.push(target);
-  
-    // Start the animation
-    growAnim.play();
+
+    animation.play();
+
+    // Auto-remove target after lifespan
+    setTimeout(() => {
+      if (target.parentNode && !target.classList.contains('hit')) {
+        this.missTarget(target);
+      }
+    }, this.fadeSpeed * 1000 + this.fadeSpeed * 1500);
   }
-  
 
   hitTarget(event, target, animations) {
     event.stopPropagation();
