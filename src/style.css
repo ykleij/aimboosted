@@ -7,6 +7,7 @@
 }
 
 body {
+  cursor: url("/public/cursor-min.png"), auto;
   font-family: "Inter", sans-serif;
   background: rgb(65, 65, 65);
   color: white;
@@ -77,35 +78,9 @@ button {
 .target.hit {
   background-color: rgba(173, 173, 173, 0.2);
   border: 2px solid #929292;
-  /* animation: hitAnimation 1s ease-out forwards; */
   pointer-events: none;
 }
 
-@keyframes hitAnimation {
-  80% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0;
-  }
-}
-
-@keyframes spawn {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.target {
-  animation: spawn 0.2s ease-out;
-}
 
 #hud {
   position: fixed;
