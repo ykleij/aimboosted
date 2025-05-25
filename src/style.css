@@ -78,6 +78,7 @@ button {
   background-color: #575757;
   border: 2px solid #929292;
   animation: hitAnimation 1s ease-out forwards;
+  pointer-events: none;
 }
 
 @keyframes hitAnimation {
