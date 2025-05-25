@@ -237,7 +237,6 @@ class AimTrainer {
     for (const animation of animations) {
       if (animation) animation.pause();
     }
-    // target.style.transition = 'none';
 
     target.classList.add('hit');
     this.hits++;
@@ -250,9 +249,9 @@ class AimTrainer {
     // Remove target
     setTimeout(() => {
       if (target.parentNode) {
-        this.missTarget(target);
+        target.parentNode.removeChild(target);
       }
-    }, this.fadeSpeed * 1000 + this.fadeSpeed * 1500);
+    }, this.fadeSpeed * 500);
 
     this.updateHUD();
   }
