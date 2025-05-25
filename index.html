@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/cursor-min.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AIMBOOSTED</title>
+  </head>
+  <body>
+    <div id="gameContainer">
+        <div id="startScreen">
+            <h1>AIMBOOSTED</h1>
+            
+            <div id="gameSettings">
+                <h3>Game Settings</h3>
+                
+                <div class="setting-group">
+                    <label for="gameDuration">Game Duration (seconds):</label>
+                    <input type="number" id="gameDuration" min="10" max="300" step="5" value="60">
+                    <div class="input-hint">10 - 300 seconds</div>
+                </div>
+
+                <div class="setting-group">
+                    <label for="targetsPerSecond">Targets Per Second:</label>
+                    <input type="number" id="targetsPerSecond" min="0.1" max="10" step="0.1" value="3">
+                    <div class="input-hint">0.1 - 10.0</div>
+                </div>
+                
+                <div class="setting-group">
+                    <label for="fadeSpeed">Animation Speed:</label>
+                    <input type="number" id="fadeSpeed" min="0.1" max="2" step="0.1" value="2">
+                    <div class="input-hint">0.1 - 2.0 seconds</div>
+                </div>
+            </div>
+            
+            <button id="startBtn">START</button>
+        </div>
+
+        <div id="hud">
+            <div>Score: <span id="score">0</span></div>
+            <div>Hits: <span id="hits">0</span></div>
+            <div>Misses: <span id="misses">0</span></div>
+            <div>Accuracy: <span id="accuracy">0%</span></div>
+            <div>Time: <span id="timer">60</span>s</div>
+        </div>
+
+        <div id="gameArea"></div>
+
+        <div id="pauseScreen">
+            <h2>PAUSED</h2>
+            <div class="pause-buttons">
+                <button id="resumeBtn" class="pause-btn resume-btn">Resume</button>
+                <button id="quitBtn" class="pause-btn quit-btn">Quit</button>
+            </div>
+        </div>
+
+        <div id="gameOverScreen">
+            <h2>FINAL STATS</h2>
+            <div id="stats">
+                <div>Score: <span id="finalScore">0</span></div>
+                <div>Total Hits: <span id="finalHits">0</span></div>
+                <div>Total Misses: <span id="finalMisses">0</span></div>
+                <div>Accuracy: <span id="finalAccuracy">0%</span></div>
+                <div>Targets/Second: <span id="targetRate">0</span></div>
+            </div>
+            <button id="restartBtn">PLAY AGAIN</button>
+        </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
