@@ -1,3 +1,37 @@
+class PauseableTimer {
+  constructor(callback, delay) {
+    this.callback = callback;
+    this.delay = delay;
+    this.remaining = delay;
+    this.timerId = null;
+    this.start = null;
+    this.paused = false;
+
+    this.resume();
+  }
+
+  pause() {
+    if (!this.paused) {
+      clearTimeout(this.timerId);
+      this.remaining -= Date.now() - this.start;
+      this.paused = true;
+    }
+  }
+
+  resume() {
+    if (this.paused || this.start === null) {
+      this.start = Date.now();
+      this.timerId = setTimeout(this.callback, this.remaining);
+      this.paused = false;
+    }
+  }
+
+  cancel() {
+    clearTimeout(this.timerId);
+    this.paused = true;
+  }
+}
+
 class AimTrainer {
   constructor() {
     this.score = 0;
@@ -72,7 +106,7 @@ class AimTrainer {
 
   startGame() {
     // Get settings from UI with validation
-    this.targetsPerSecond = Math.max(0.1, Math.min(10, parseFloat(document.getElementById('targetsPerSecond').value) || 1));
+    this.targetsPerSecond = Math.max(0.1, Math.min(4, parseFloat(document.getElementById('targetsPerSecond').value) || 1));
     this.gameTime = Math.max(10, Math.min(300, parseInt(document.getElementById('gameDuration').value) || 60));
     this.fadeSpeed = Math.max(0.1, Math.min(2, parseFloat(document.getElementById('fadeSpeed').value) || 0.8));
 
@@ -120,6 +154,14 @@ class AimTrainer {
     if (this.spawnTimer) {
       clearTimeout(this.spawnTimer);
     }
+
+    this.targets.forEach(target => {
+      if (target.lifetimeTimer) target.lifetimeTimer.pause();
+    });
+
+    document.getAnimations().forEach(animation => {
+      animation.pause();
+    });
   }
 
   resumeGame() {
@@ -129,6 +171,18 @@ class AimTrainer {
     // Resume timers
     this.startTimer();
     this.startSpawning();
+
+    this.targets.forEach(target => {
+      if (target.lifetimeTimer) target.lifetimeTimer.resume();
+    });
+
+    document.getAnimations().forEach(animation => {
+      const target = animation.effect?.target;
+
+      if (target.classList.contains('hit')) return;
+
+      animation.play();
+    });
   }
 
   resetStats() {
@@ -187,7 +241,6 @@ class AimTrainer {
       { transform: 'scale(1)' }
     ], {
       duration: this.fadeSpeed * 1000,
-      // easing: 'ease-out',
       fill: 'forwards'
     });
 
@@ -198,7 +251,6 @@ class AimTrainer {
         { transform: 'scale(0)' }
       ], {
         duration: this.fadeSpeed * 1500,
-        // easing: 'ease-out',
         fill: 'forwards'
       });
     };
@@ -222,7 +274,7 @@ class AimTrainer {
     animation.play();
 
     // Auto-remove target after lifespan
-    setTimeout(() => {
+    target.lifetimeTimer = new PauseableTimer(() => {
       if (target.parentNode && !target.classList.contains('hit')) {
         this.missTarget(target);
       }
@@ -239,15 +291,23 @@ class AimTrainer {
     }
 
     target.classList.add('hit');
-    this.hits++;
 
+    this.hits++;
     const points = 5;
     this.score += points;
 
-    target.classList.remove("active")
+    target.classList.remove("active");
+
+    target.animate([
+      { opacity: 1, offset: 0.8 },
+      { opacity: 0, offset: 1 }
+    ], {
+      duration: 1000,
+      fill: 'forwards'
+    });
 
     // Remove target
-    setTimeout(() => {
+    target.lifetimeTimer = new PauseableTimer(() => {
       if (target.parentNode) {
         target.parentNode.removeChild(target);
       }

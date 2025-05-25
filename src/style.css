@@ -75,9 +75,9 @@ button {
 }
 
 .target.hit {
-  background-color: #575757;
+  background-color: rgba(173, 173, 173, 0.2);
   border: 2px solid #929292;
-  animation: hitAnimation 1s ease-out forwards;
+  /* animation: hitAnimation 1s ease-out forwards; */
   pointer-events: none;
 }
 
