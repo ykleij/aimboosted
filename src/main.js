@@ -78,6 +78,16 @@ class AimTrainer {
     document.getElementById('resumeBtn').addEventListener('click', () => this.resumeGame());
     document.getElementById('quitBtn').addEventListener('click', () => this.quitToMenu());
 
+    const cursorSelect = document.getElementById('legacyCursor');
+    this.handleLegacyCursor(cursorSelect.value); // init
+    cursorSelect.addEventListener('change', (event) => this.handleLegacyCursor(event.target.value)) // event
+
+    window.addEventListener('blur', () => {
+      if (this.isGameActive && !this.isPaused) {
+        this.pauseGame();
+      }
+    });
+
     // Keyboard controls
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
@@ -90,18 +100,19 @@ class AimTrainer {
     });
 
     // Handle clicks on game area for misses
-    this.gameArea.addEventListener('click', (e) => {
-      if (this.isGameActive && !this.isPaused && e.target === this.gameArea) {
-        this.registerMiss(e);
-      }
-    });
-
-    // Handle right clicks on game area for misses
     this.gameArea.addEventListener('mousedown', (e) => {
-      if (e.button === 2 && this.isGameActive && !this.isPaused && e.target === this.gameArea) {
+      if ((e.button === 0 || e.button === 2) && this.isGameActive && !this.isPaused && e.target === this.gameArea) {
         this.registerMiss(e);
       }
     });
+  }
+
+  handleLegacyCursor(bool) {
+    if (bool == "true") {
+      document.querySelector('body').style.cursor = 'url("/aimboosted/public/cursor-min.png"), auto';
+    } else if (bool == "false") {
+      document.querySelector('body').style.cursor = 'auto';
+    }
   }
 
   startGame() {
@@ -258,10 +269,11 @@ class AimTrainer {
     animation.pause();
     animation.currentTime = 0;
 
-    target.addEventListener('click', (e) => this.hitTarget(e, target, [animation, shrinkAnim]));
-
-    // Add right-click support for targets
     target.addEventListener('mousedown', (e) => {
+      if (e.button === 0) { // Left mouse button
+        e.preventDefault();
+        this.hitTarget(e, target, [animation, shrinkAnim]);
+      }
       if (e.button === 2) { // Right mouse button
         e.preventDefault();
         this.hitTarget(e, target, [animation, shrinkAnim]);
