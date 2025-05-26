@@ -46,6 +46,7 @@ class AimTrainer {
     this.spawnTimer = null;
     this.targetsPerSecond = 3;
     this.fadeSpeed = 2;
+    // this.sound = new Audio('/aimboosted/public/pop1.wav')
 
     this.gameArea = document.getElementById('gameArea');
     this.startScreen = document.getElementById('startScreen');
@@ -298,6 +299,8 @@ class AimTrainer {
 
     if (target.classList.contains('hit') || !this.isGameActive || this.isPaused) return;
 
+    // this.sound.play();
+
     for (const animation of animations) {
       if (animation) animation.pause();
     }
@@ -310,11 +313,11 @@ class AimTrainer {
 
     target.classList.remove("active");
 
-    target.animate([
+    target.animate([ // fade out
       { opacity: 1, offset: 0.8 },
       { opacity: 0, offset: 1 }
     ], {
-      duration: 1000,
+      duration: this.fadeSpeed * 500,
       fill: 'forwards'
     });
 
